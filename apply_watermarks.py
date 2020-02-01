@@ -32,8 +32,8 @@ def add_watermark(input_file, watermark_file, output_file):
 
             wpdf = PyPDF2.PdfFileReader(watermark_file)
             watermark = wpdf.getPage(0)
-            watermark.mergePage(page)
-            pdf_writer.addPage(watermark)
+            page.mergePage(watermark)
+            pdf_writer.addPage(page)
 
         pdf_writer.write(filehandle_output)
 
