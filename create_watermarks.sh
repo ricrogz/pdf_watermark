@@ -16,7 +16,6 @@ function get_font_size() {
 function create_watermark() {
 
     sz=$(get_font_size ${#1})
-    echo "sz=$sz"
 
     convert \
         -density 144 \
