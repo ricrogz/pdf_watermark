@@ -13,22 +13,21 @@ function trim_whitespace() {
 function create_watermark() {
 
 convert \
-    -density 300 \
-    -size 1550x600 \
-    -pointsize 20 \
-    -fill black -background transparent \
-    -gravity northwest caption:"\n\n\n$1" \
-    -gravity southeast -draw "text 100,0 \"$2\"" \
-    -rotate -52  -resample '80%' \
-    -compress Zip \
+    -density 144 \
+    -size 1190x1684 xc:transparent \
+    -fill black \
+    -pointsize 35 -weight 800 \
+    -gravity center \
+    -annotate -55,-55,20,50 "$1\n$2" \
     miff:- | \
 composite \
-    -geometry +200+200 \
-    -tile  -dissolve '30%' - \
+    -dissolve '30%' - \
     -size 1190x1684 xc:transparent \
     -page A4 \
+    -compress Zip \
     "$3/$2.pdf"
 }
+
 
 function main() {
 
