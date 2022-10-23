@@ -1,1 +1,2 @@
+ghostscript==0.7
 PyPDF2==1.27.5

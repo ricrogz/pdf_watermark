@@ -2,8 +2,10 @@
 
 from apply_watermarks import find_watermarks
 from apply_watermarks import add_watermark
+from apply_watermarks import flatten
 
 from apply_watermarks import output_dir
+from apply_watermarks import temp_dir as root_temp_dir
 from apply_watermarks import watermarks_dir
 
 import os
@@ -49,11 +51,16 @@ def main(batch_file, output_dir):
     for watermark_file in watermarks:
         suffix = os.path.basename(watermark_file)[:-4]
         tgt_dir = os.path.join(output_dir, suffix)
+        temp_dir = os.path.join(root_temp_dir, suffix)
         os.makedirs(tgt_dir, exist_ok=True)
+        os.makedirs(temp_dir, exist_ok=True)
         for pdf_file in pdf_files:
             prefix = os.path.basename(pdf_file)[:-4]
-            output_file = os.path.join(tgt_dir, f'{prefix}_{suffix}.pdf')
-            add_watermark(pdf_file, watermark_file, output_file)
+            output_file = f'{prefix}_{suffix}.pdf'
+            output_path = os.path.join(tgt_dir, output_file)
+            temp_path = os.path.join(temp_dir, output_file)
+            add_watermark(pdf_file, watermark_file, temp_path)
+            flatten(temp_path, output_path)
 
 
 if __name__ == '__main__':

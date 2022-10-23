@@ -1,13 +1,15 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import glob
 import os
 import sys
 
+import ghostscript
 import PyPDF2
 
 watermarks_dir = './watermarks'
 output_dir = './output'
+temp_dir = '/tmp/pdf_watermark'
 
 
 def find_watermarks(watermarks_dir):
@@ -38,6 +40,16 @@ def add_watermark(input_file, watermark_file, output_file):
         pdf_writer.write(filehandle_output)
 
 
+def flatten(input_file, output_file):
+    args = [
+        "gs", "-sDEVICE=pdfwrite", "-dPDFSETTINGS=/default", "-dNOPAUSE",
+        "-dQUIET", "-dBATCH", f"-sOutputFile={output_file}", input_file
+    ]
+
+    with open(os.devnull, 'wb') as fnull:
+        ghostscript.Ghostscript(*args, stderr=fnull)
+
+
 def main(input_file, watermarks_dir, output_dir):
     if not os.path.exists(input_file):
         print(f"""
@@ -45,14 +57,18 @@ def main(input_file, watermarks_dir, output_dir):
               """)
         quit(1)
 
+    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(temp_dir, exist_ok=True)
+
     # Output file name is a combination of input and watermank file names
     prefix = os.path.basename(input_file)[:-4]
     for watermark_file in find_watermarks(watermarks_dir):
         print(watermark_file)
         suffix = os.path.basename(watermark_file)[:-4]
+        temp_file = os.path.join(temp_dir, f'{prefix}_{suffix}.pdf')
         output_file = os.path.join(output_dir, f'{prefix}_{suffix}.pdf')
-
-        add_watermark(input_file, watermark_file, output_file)
+        add_watermark(input_file, watermark_file, temp_file)
+        flatten(temp_file, output_file)
 
 
 if __name__ == '__main__':
